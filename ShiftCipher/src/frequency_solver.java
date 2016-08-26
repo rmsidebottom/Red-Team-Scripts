@@ -60,11 +60,15 @@ public class frequency_solver {
     private static String solve(String encrypted, double[] freqs) {
         StringBuffer answer = new StringBuffer();
         for (int i = 0; i < encrypted.length(); i++){
-            // numeric location of letter in alphabet
-            int letterNum = findSpot(encrypted.charAt(i));
-            for (int c = 0; c < frequencies.size(); i++){
-                if(freqs[letterNum] == frequencies.get(c)){
-                    answer.append(alpha.get(c));
+            if (encrypted.charAt(i) == ' '){
+                answer.append(' ');
+            } else {
+                // numeric location of letter in alphabet
+                int letterNum = findSpot(encrypted.charAt(i));
+                for (int c = 0; c < frequencies.size(); i++){
+                    if(freqs[letterNum] == frequencies.get(c)){
+                        answer.append(alpha.get(c));
+                    }
                 }
             }
         }
