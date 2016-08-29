@@ -6,11 +6,11 @@
  * and print all of them to the display.
  */
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
-
-import static java.lang.Character.toLowerCase;
 
 public class frequency_solver {
      static ArrayList<String> alpha = new ArrayList<>(Arrays.asList("a", "b",
@@ -29,16 +29,30 @@ public class frequency_solver {
      * @return - array of the frequency of each letter in encrypted text
      *
      */
-    private static double[] findFrequency(String cipherText){
-        //gather the number of occurances of each letter
-        double[] freqs = new double[26];
-        for (int i = 0; i < cipherText.length(); i++){
-            int freqLoc = findSpot(cipherText.charAt(i));
-            freqs[freqLoc]++;
+    private static ArrayList<Double> findFrequency(String cipherText){
+        //gather the number of occurrences of each letter
+        ArrayList<Double> freqs = new ArrayList<>(26);
+        for (int i = 0; i < 26; i++){
+            freqs.add(i, 0.0);
         }
-
-        for (int i = 0; i < freqs.length; i++){
-            freqs[i] = freqs[i] / cipherText.length();
+        int spaces = 0;
+//        System.out.println(alpha.toString());
+        for (int i = 0; i < cipherText.length(); i++){
+            if (cipherText.charAt(i) == ' '){
+                spaces++;
+            } else {
+//                System.out.print(cipherText.charAt(i) + "\t");
+                int freqLoc = findSpot(cipherText.charAt(i));
+//                System.out.print(freqLoc + "\t");
+                double occurrences = freqs.get(freqLoc) + 1;
+                freqs.add(freqLoc, occurrences);
+            }
+        }
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.CEILING);
+        for (int i = 0; i < freqs.size(); i++){
+            double value = (freqs.get(i) / (cipherText.length() - spaces));
+            freqs.set(i, Double.parseDouble(df.format(value)));
         }
         return freqs;
     }
@@ -49,7 +63,9 @@ public class frequency_solver {
      * @return - the position to be used to reference c's position in alphabet
      */
     private static int findSpot(char c) {
-        return alpha.indexOf(toLowerCase(c));
+//        System.out.print(c + "\t");
+        String s = c + "";
+        return alpha.indexOf(s);
     }
 
     /**
@@ -59,14 +75,14 @@ public class frequency_solver {
      */
     private static String solve(String encrypted, double[] freqs) {
         StringBuffer answer = new StringBuffer();
-        for (int i = 0; i < encrypted.length(); i++){
-            if (encrypted.charAt(i) == ' '){
+        for (int i = 0; i < encrypted.length(); i++) {
+            if (encrypted.charAt(i) == ' ') {
                 answer.append(' ');
             } else {
                 // numeric location of letter in alphabet
                 int letterNum = findSpot(encrypted.charAt(i));
-                for (int c = 0; c < frequencies.size(); i++){
-                    if(freqs[letterNum] == frequencies.get(c)){
+                for (int c = 0; c < frequencies.size(); i++) {
+                    if (freqs[letterNum] == frequencies.get(c)) {
                         answer.append(alpha.get(c));
                     }
                 }
@@ -88,8 +104,9 @@ public class frequency_solver {
         scn.useDelimiter("\n");
         String cipherText = scn.next();
 
-        findFrequency(cipherText);
-
-        System.out.println(cipherText);
+        ArrayList<Double> resFreq = findFrequency(cipherText);
+        System.out.println(frequencies.toString() + "\n" + alpha.toString() +
+                "\n" + resFreq.toString());
+//        System.out.println( solve(cipherText, resFreq));
     }
 }
