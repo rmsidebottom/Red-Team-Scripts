@@ -1,2 +1,2 @@
 # Red-Team-Scripts
-Scripts to break and exploit stuff.
+Scripts for recon, exploitation, and persistence.
