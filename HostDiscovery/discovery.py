@@ -25,6 +25,9 @@ def tcpSYN(ip):
     packet = IP(dst=ip)/TCP(sport=5000, dport=80, flags="S")
     ans = sr1(packet, timeout=2, verbose=0)
 
+    # no answer = filtered by firewall
+    # SA, RA = open
+
     if ans is None:
         return False
     elif (ans.getlayer(TCP).flags=="20"):
@@ -39,6 +42,14 @@ def tcpSYN(ip):
 def tcpACK(ip):
     # receives an RST back
     # linux sends ICMP destination unreachable when firewall on
+    packet = IP(dst=ip)/TCP(sport=5000, dport=80, flags="A")
+    ans = sr1(packet, timeout=2, verbose=0)
+
+    if ans is None:
+        return False
+    else:
+        return True
+
     return
 
 # send ICMP Timestamp request to ip
@@ -47,7 +58,7 @@ def tcpACK(ip):
 # return: true of false pending on response from remote host
 def icmpTimestamp(ip):
     packet = IP(dst=ip)/ICMP(type=13)
-    ans = sr1(packet)
+    ans = sr1(packet, timeout=2, verbose=0)
 
     if ans is None:
         return False
@@ -61,6 +72,21 @@ def icmpTimestamp(ip):
     return
 
 def main():
+    count = 0
+    ip = '127.0.0.1'
+    if icmpEcho(ip):
+        print '{} passed ICMP ECHO'.format(ip)
+        count+=1
+    if icmpTimestamp(ip):
+        print '{} passed ICMP Timestamp'.format(ip)
+        count+=1
+    if tcpSYN(ip):
+        print '{} passed TCP SYN'.format(ip)
+        count+=1
+    if tcpACK(ip):
+        print '{} passed TCP ACK'.format(ip)
+        count+=1
+    print '{} passed {}/4 tests'.format(ip, count)
     return
 
 if __name__ == "__main__":
